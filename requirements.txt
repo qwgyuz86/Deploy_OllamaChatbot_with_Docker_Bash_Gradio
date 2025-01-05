@@ -1,0 +1,13 @@
+# dependencies:
+
+gradio==4.44.1
+langchain_community
+langchain
+langchain_huggingface
+langchain_ollama
+chromadb
+datasets
+iso639-lang
+langid
+sentence-transformers
+torch==2.5.1
