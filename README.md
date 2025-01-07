@@ -1,4 +1,4 @@
-# Deploy_OllamaChatbot_with_Docker_Bash_Gradio
+# Deploy Ollama Chatbot with Docker Bash Gradio
 
 ### Introduction
 Ollama is an open-source tool that allows users to run, create, and share large language models (LLMs) locally on their own computer.
