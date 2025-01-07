@@ -1,0 +1,58 @@
+name: chatbot_project
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - chatbot-net
+    healthcheck:
+      test: ollama list || exit 1 # This checks if Ollama is running
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+    restart: always
+
+  ollama-models-pull:
+    container_name: ollama-models-pull
+    image: curlimages/curl:latest
+    command: >
+      http://ollama:11434/api/pull -d '{"name":"wangshenzhi/llama3-8b-chinese-chat-ollama-q4"}'
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - chatbot-net
+    healthcheck:
+      test: ollama serve || exit 1 # This checks if the Ollama server is running with the pulled model
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+
+  chatbot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chatbot-app
+    ports:
+      - "7860:7860"
+    environment:
+      - EMBED_DEVICE_CHOICE=cpu
+      - TOKENIZERS_PARALLELISM=false
+    networks:
+      - chatbot-net
+    depends_on:
+      - ollama-models-pull
+
+volumes:
+  ollama:
+
+networks:
+  chatbot-net:  # This defines the network properly
+    driver: bridge
